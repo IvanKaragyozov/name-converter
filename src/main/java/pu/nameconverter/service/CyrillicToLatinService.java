@@ -31,10 +31,10 @@ public class CyrillicToLatinService {
         Optional<CyrillicToLatin> entity = findByCyrillicName(cyrillicName);
 
         if (entity.isPresent()) {
-            throw new IllegalArgumentException("Name is already in the database.");
+            System.out.println("Name is already in the database.");
         }
 
-        CyrillicToLatin cyrillicToLatin = findByCyrillicName(cyrillicName).orElse(new CyrillicToLatin());
+        CyrillicToLatin cyrillicToLatin = findByCyrillicName(cyrillicName).orElseGet(CyrillicToLatin::new);
 
         cyrillicToLatin.setLatinName(latinName);
         cyrillicToLatin.setCyrillicName(cyrillicName);
@@ -48,7 +48,7 @@ public class CyrillicToLatinService {
             entry('ж', "zh"), entry('з', "z"), entry('и', "i"), entry('й', "y"), entry('к', "k"), entry('л', "l"),
             entry('м', "m"), entry('н', "n"), entry('о', "o"), entry('п', "p"), entry('р', "r"), entry('с', "s"),
             entry('т', "t"), entry('у', "u"), entry('ф', "f"), entry('х', "h"), entry('ц', "ts"), entry('ч', "ch"),
-            entry('ш', "sh"), entry('щ', "sch"), entry('ъ', ""), entry('ь', ""), entry('ю', "yu"), entry('я', "ya")
+            entry('ш', "sh"), entry('щ', "sch"), entry('ъ', "а"), entry('ь', ""), entry('ю', "yu"), entry('я', "ya")
     );
 
     private String cyrillicToLatin(String cyrillicWord) {
@@ -74,7 +74,6 @@ public class CyrillicToLatinService {
     private Optional<CyrillicToLatin> findByCyrillicName(String name){
         return this.cyrillicToLatinRepository
                 .findByCyrillicName(name);
-                //.orElse(new CyrillicToLatin());
     }
 
 }
