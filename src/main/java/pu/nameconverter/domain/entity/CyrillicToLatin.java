@@ -1,4 +1,4 @@
-package pu.nameconverter.entity;
+package pu.nameconverter.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

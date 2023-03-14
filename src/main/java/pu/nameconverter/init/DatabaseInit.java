@@ -20,15 +20,15 @@ public class DatabaseInit implements CommandLineRunner {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
-            System.out.print("Enter a cyrillic name (or 'exit' to quit): ");
+            System.out.print("Enter a cyrillic text (or 'exit' to quit): ");
             String cyrillicName = scanner.nextLine();
 
             if (cyrillicName.equalsIgnoreCase("exit")) {
                 break;
             }
 
-            String latinName = this.cyrillicToLatinService.convertCyrillicToLatin(cyrillicName);
-            System.out.printf("The latin name is: %s%n", latinName);
+            String latinText = this.cyrillicToLatinService.convertCyrillicNamesInText(cyrillicName);
+            System.out.printf("The latin equivalent is is: %s%n", latinText);
         }
 
         scanner.close();
