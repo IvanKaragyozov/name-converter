@@ -7,11 +7,11 @@ import pu.nameconverter.service.CyrillicToLatinService;
 import java.util.Scanner;
 
 @Component
-public class DatabaseInit implements CommandLineRunner {
+public class NameConverterInit implements CommandLineRunner {
 
     private final CyrillicToLatinService cyrillicToLatinService;
 
-    public DatabaseInit(CyrillicToLatinService cyrillicToLatinService) {
+    public NameConverterInit(CyrillicToLatinService cyrillicToLatinService) {
         this.cyrillicToLatinService = cyrillicToLatinService;
     }
 
