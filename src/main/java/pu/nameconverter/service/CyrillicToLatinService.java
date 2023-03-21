@@ -5,12 +5,11 @@ import org.springframework.stereotype.Service;
 import pu.nameconverter.domain.entity.CyrillicToLatin;
 import pu.nameconverter.repository.CyrillicToLatinRepository;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Map.entry;
+import static pu.nameconverter.domain.enums.Letters.CYRILLIC_TO_LATIN_MAP;
 
 @Service
 public class CyrillicToLatinService {
@@ -22,69 +21,42 @@ public class CyrillicToLatinService {
         this.cyrillicToLatinRepository = cyrillicToLatinRepository;
     }
 
-    private static final Map<Character, String> CYRILLIC_TO_LATIN_MAP = Map.ofEntries(
-            entry('а', "a"), entry('б', "b"), entry('в', "v"), entry('г', "g"), entry('д', "d"), entry('е', "e"),
-            entry('ж', "zh"), entry('з', "z"), entry('и', "i"), entry('й', "y"), entry('к', "k"), entry('л', "l"),
-            entry('м', "m"), entry('н', "n"), entry('о', "o"), entry('п', "p"), entry('р', "r"), entry('с', "s"),
-            entry('т', "t"), entry('у', "u"), entry('ф', "f"), entry('х', "h"), entry('ц', "ts"), entry('ч', "ch"),
-            entry('ш', "sh"), entry('щ', "sch"), entry('ъ', "а"), entry('ь', ""), entry('ю', "yu"), entry('я', "ya")
-    );
-
     public String convertCyrillicNamesInText(String cyrillicText) {
         StringBuilder latinTextBuilder = new StringBuilder();
         StringBuilder cyrillicNameBuilder = new StringBuilder();
-        boolean inName = false;
 
         for (char c : cyrillicText.toCharArray()) {
 
             if (Character.isLetter(c)) {
-                if (!inName) {
-                    inName = true;
-                    cyrillicNameBuilder.setLength(0);
-                }
                 cyrillicNameBuilder.append(c);
             } else {
-                if (inName) {
-                    inName = false;
-                    String cyrillicName = cyrillicNameBuilder.toString();
+
+                String cyrillicName = cyrillicNameBuilder.toString();
+                if (!cyrillicName.isEmpty()) {
                     String latinName = convertCyrillicToLatin(cyrillicName);
 
                     Optional<CyrillicToLatin> optionalEntity = findByCyrillicName(cyrillicName);
                     if (optionalEntity.isPresent()) {
+
                         latinName = optionalEntity.get().getLatinName();
-                    } else {
-                        if (isName(cyrillicName)) {
-                            CyrillicToLatin entity = new CyrillicToLatin();
-                            entity.setCyrillicName(cyrillicName);
-                            entity.setLatinName(latinName);
-                            cyrillicToLatinRepository.save(entity);
-                        }
+
+                    } else if (isName(cyrillicName)) {
+                        CyrillicToLatin entity = new CyrillicToLatin();
+
+                        entity.setCyrillicName(cyrillicName);
+                        entity.setLatinName(latinName);
+
+                        this.cyrillicToLatinRepository.save(entity);
                     }
 
-                    latinTextBuilder.append(latinName).append(c);
-                } else {
-                    latinTextBuilder.append(c);
+                    latinTextBuilder.append(latinName);
+                    cyrillicNameBuilder.setLength(0);
                 }
+
+                latinTextBuilder.append(c);
             }
         }
-        if (inName) {
-            String cyrillicName = cyrillicNameBuilder.toString();
-            String latinName = convertCyrillicToLatin(cyrillicName);
 
-            Optional<CyrillicToLatin> optionalEntity = findByCyrillicName(cyrillicName);
-            if (optionalEntity.isPresent()) {
-                latinName = optionalEntity.get().getLatinName();
-            } else {
-                if (isName(cyrillicName)) {
-                    CyrillicToLatin entity = new CyrillicToLatin();
-                    entity.setCyrillicName(cyrillicName);
-                    entity.setLatinName(latinName);
-                    cyrillicToLatinRepository.save(entity);
-                }
-            }
-
-            latinTextBuilder.append(latinName);
-        }
         return latinTextBuilder.toString();
     }
 
